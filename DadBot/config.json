@@ -1,0 +1,29 @@
+[
+    {
+        "server_id": 864381907714572288,
+        "server_config": {
+            "start_time": "00:30",
+            "end_time": "06:00",
+            "quiet_days": "MTWRF",
+            "grace_period": 30
+        }
+    },
+    {
+        "server_id": 1353200253888757891,
+        "server_config": {
+            "start_time": "00:30",
+            "end_time": "07:00",
+            "quiet_days": "MTWRF",
+            "grace_period": 30
+        }
+    },
+    {
+        "server_id": 788275606558474261,
+        "server_config": {
+            "start_time": "00:30",
+            "end_time": "07:00",
+            "quiet_days": "MTWRF",
+            "grace_period": 30
+        }
+    }
+]
