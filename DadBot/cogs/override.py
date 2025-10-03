@@ -2,6 +2,7 @@ import discord
 from discord import User, Role
 from discord.ext import commands
 from datetime import time
+from typing import cast, Any
 from DadBot.config_manager import set_user_override, set_role_override, clear_role_override, clear_user_override
 
 def _is_valid_time(hour: int, minute: int) -> str | None:
@@ -104,12 +105,13 @@ async def setup(bot: commands.Bot):
     cog = Override(bot)
     await bot.add_cog(cog)
 
-    parental = bot.get_command("parental")
-    if parental is None:
+    parental_cmd = bot.get_command("parental")
+    if isinstance(parental_cmd, commands.Group):
+        parental_cmd.add_command(cast(commands.Command[Any, Any, Any], cog.override))
+    else:
         @commands.group(name="parental", invoke_without_command=True)
         async def parental(ctx: commands.Context):
             await ctx.send("Use `$parental override`")
         bot.add_command(parental)
-        parental = bot.get_command("parental")
 
-    parental.add_command(cog.override)
+        parental.add_command(cast(commands.Command[Any, Any, Any], cog.override))

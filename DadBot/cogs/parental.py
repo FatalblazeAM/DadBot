@@ -70,7 +70,7 @@ class Parental(commands.Cog):
 
     @parental.command(name='grace')
     @commands.has_guild_permissions(manage_guild=True)
-    async def set_grace_period(self, ctx, minutes: int = None):
+    async def set_grace_period(self, ctx, minutes: int | None = None):
         """Set grace period"""
 
         guild_id = ctx.guild.id
@@ -86,7 +86,7 @@ class Parental(commands.Cog):
 
     @parental.command(name='days')
     @commands.has_guild_permissions(manage_guild=True)
-    async def set_quiet_days(self, ctx, days: str = None):
+    async def set_quiet_days(self, ctx, days: str | None = None):
         """Set quiet days. Day format should be a string like 'MTWRFSU' or 'MTWRF'"""
 
         guild_id = ctx.guild.id

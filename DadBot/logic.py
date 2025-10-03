@@ -5,19 +5,25 @@ from .config_manager import get_server_config, load_root
 from .config_models import QuietConfig
 
 
-def _is_day_enabled(quiet_days: str, dt: datetime) -> bool:
+def _is_day_enabled(quiet_days: str | None, dt: datetime) -> bool:
     day = calendar.day_name[dt.weekday()]
+    if quiet_days is None:
+        quiet_days = ""
     code = {"Monday":"M","Tuesday":"T","Wednesday":"W","Thursday":"R","Friday":"F","Saturday":"S","Sunday":"U"}[day]
     return code in (quiet_days or "") 
 
-def _between(target: time, start: time, end: time) -> bool:
+def _between(target: time, start: time | None, end: time | None) -> bool:
     """Checks if the target time is located between the start and end times"""
+    if start is None:
+        start = time(0, 30)
+    if end is None:
+        end = time(7, 0)
     if start <= end:
         return (start <= target <= end)
     else:
         return (target >= start or target <= end)
     
-def resolve_config_for_member(guild_id: int, *, member: Member = None) -> QuietConfig:
+def resolve_config_for_member(guild_id: int, *, member: Member | None = None) -> QuietConfig:
     root = load_root()
     guild_config = root.ensure_guild(guild_id)
     server_config = guild_config.server_config
@@ -61,17 +67,20 @@ def resolve_config_for_member(guild_id: int, *, member: Member = None) -> QuietC
 
     return return_config
 
-def is_quiet_time(guild_id: int, *, member: Member = None, now: datetime | None = None):
+def is_quiet_time(guild_id: int, *, member: Member | None = None, now: datetime | None = None):
     config = resolve_config_for_member(guild_id, member=member)
     now = now or datetime.now()
     if not _is_day_enabled(config.quiet_days, now):
         return False
     return _between(now.time(), config.start_time, config.end_time)
 
-def is_dc_time(guild_id: int, *, member: Member = None, now: datetime | None = None):
+def is_dc_time(guild_id: int, *, member: Member | None = None, now: datetime | None = None):
     config = resolve_config_for_member(guild_id, member=member)
     now = now or datetime.now()
     if not _is_day_enabled(config.quiet_days, now):
         return False
-    dc_time = (datetime.combine(now.date(), config.start_time) + timedelta(minutes=config.grace_period)).time()
+    
+    start = time(0,30) if config.start_time is None else config.start_time
+    grace_period = 30 if config.grace_period is None else config.grace_period
+    dc_time = (datetime.combine(now.date(), start) + timedelta(minutes=grace_period)).time()
     return _between(now.time(), dc_time, config.end_time)
