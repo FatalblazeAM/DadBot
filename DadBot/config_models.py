@@ -10,6 +10,23 @@ def _time_to_str(t: time | None) -> str | None:
     if t is None: return None
     return f"{t.hour:02d}:{t.minute:02d}"
 
+def _holidays_to_str(holidays: list[tuple[int,int]] | None) -> list[str]:
+    if holidays is None:
+        return []
+    out = []
+    for holiday in holidays:
+        out.append(f"{holiday[0]}/{holiday[1]}")
+    return out
+
+def _strs_to_holidays(strs: list[str]) -> list[tuple[int,int]]:
+    out = []
+    for s in strs:
+        nums = s.split("/")
+        month = nums[0]
+        date = nums[1]
+        out.append((month, date))
+    return out
+
 @dataclass
 class QuietConfig:
     """Dataclass for holding data regarding the quiet time configuration."""
@@ -17,6 +34,7 @@ class QuietConfig:
     end_time: time | None = time(7, 0)
     quiet_days: str | None = "MTWRF"
     grace_period: int | None = 30
+    holidays: list[tuple[int,int]] | None = [(1,1), (7,4), (11,11), (12,25)]
 
     def to_dict(self) -> dict:
         return {
@@ -24,6 +42,7 @@ class QuietConfig:
             "end_time": _time_to_str(self.end_time),
             "quiet_days": self.quiet_days if self.quiet_days is not None else None,
             "grace_period": self.grace_period if self.grace_period is not None else None,
+            "holidays": _holidays_to_str(self.holidays) if self.holidays is not None else None
         }
     
     @classmethod
@@ -36,9 +55,11 @@ class QuietConfig:
         
         start_time_raw = d.get("start_time") if present("start_time") else "00:30"
         end_time_raw = d.get("end_time") if present("end_time") else "07:00"
+        holidays_raw = d.get("holidays") if present("holidays") else ["1/1", "7/4", "11/11", "12/25"]
         
         start_time = None if start_time_raw is None else _str_to_time(start_time_raw)
         end_time = None if end_time_raw is None else _str_to_time(end_time_raw)
+        holidays = None if holidays_raw is None else _strs_to_holidays(holidays_raw)
 
         quiet_days = d.get("quiet_days") if present("quiet_days") else "MTWRF"
         grace_period = d.get("grace_period") if present("grace_period") else 30
@@ -48,6 +69,7 @@ class QuietConfig:
             end_time=end_time,
             quiet_days=quiet_days,
             grace_period=grace_period,
+            holidays=holidays,
         )
 
 @dataclass

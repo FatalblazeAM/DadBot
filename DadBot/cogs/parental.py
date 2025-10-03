@@ -119,7 +119,21 @@ class Parental(commands.Cog):
 
     @parental.command(name='holiday')
     @commands.has_guild_permissions(manage_guild=True)
-    async def holiday(self, ctx, month: int | None = None, year: int | None = None):
+    async def holiday(self, ctx, month: int | None = None, day: int | None = None):
+        guild_id = ctx.guild.id
+        holidays = get_server_config(guild_id).holidays
+        if month is None and day is None:
+            return await ctx.send(holidays)
+        if month is None or day is None:
+            return await ctx.send("Must specify a month and date.")
+        if month > 12 or month < 1:
+            return await ctx.send("Month must be between 1 and 12.")
+        if day > 31 or day < 1: 
+            return await ctx.send("Day must be between 1 and 31.")
+        if holidays is None:
+            holidays = []
+        holidays.append((month, day))
+        set_server_config(guild_id, holidays=holidays)
         raise NotImplementedError
 
 
