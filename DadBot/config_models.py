@@ -34,7 +34,7 @@ class QuietConfig:
     end_time: time | None = time(7, 0)
     quiet_days: str | None = "MTWRF"
     grace_period: int | None = 30
-    holidays: list[tuple[int,int]] | None = [(1,1), (7,4), (11,11), (12,25)]
+    holidays: list[tuple[int,int]] | None = field(default_factory=lambda: [(1,1), (7,4), (11,11), (12,25)])
 
     def to_dict(self) -> dict:
         return {

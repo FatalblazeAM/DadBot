@@ -16,12 +16,15 @@ def make_bot() -> commands.Bot:
 async def load_cogs(bot: commands.Bot):
     await bot.load_extension("DadBot.cogs.parental")
     await bot.load_extension("DadBot.cogs.override")
+    await bot.load_extension("DadBot.cogs.jokes")
 
 def main():
     load_dotenv(Path(__file__).resolve().parent.parent / ".env")
     TOKEN = os.getenv("DISCORD_TOKEN")
+    if TOKEN is None:
+        print("ERROR: No authentication token")
+        return
     bot = make_bot()
-
     @tasks.loop(minutes=1)
     async def end_call():
         for guild in bot.guilds:
@@ -50,16 +53,18 @@ def main():
             return
         
         ctx = await bot.get_context(message)
+        if ctx.guild is not None:
+            guild_id: int = ctx.guild.id
 
-        if is_quiet_time(ctx.guild.id, member=message.author) and not ctx.valid:
-            try:
-                await message.delete()
-            except discord.Forbidden:
+            if is_quiet_time(guild_id=guild_id, member=message.author) and not ctx.valid:
                 try:
-                    print("No permission to delete messages.")
-                    await ctx.send("No permission to delete messages.")
+                    await message.delete()
                 except discord.Forbidden:
-                    print("No permission to send or delete messages.")
+                    try:
+                        print("No permission to delete messages.")
+                        await ctx.send("No permission to delete messages.")
+                    except discord.Forbidden:
+                        print("No permission to send or delete messages.")
 
         print(f'Message in {message.guild}, #{message.channel} from {message.author}: {message.content}')
         await bot.process_commands(message)
