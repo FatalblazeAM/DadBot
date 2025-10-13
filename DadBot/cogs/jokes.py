@@ -22,7 +22,7 @@ class Jokes(commands.Cog):
         message_template = re.compile(
             r"""(?ix)
             \b
-            i \s* (?: (?:['’]\s*m) |a \s* m)
+            i \s* (?: (?:['’]?\s*m) |a \s* m)
             \s+
             (?P<who> .+? )
             [\s\.\!\?]* $
