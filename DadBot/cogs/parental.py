@@ -163,10 +163,7 @@ class Parental(commands.Cog):
                     if last_time is not None and datetime.now() < (last_time + timedelta(minutes=30)): # Check if it's been less than 30 minutes
                         await message.delete()
                         try: 
-                            await message.author.send(f"""{message.author}, it's been less than 30 minutes since your last message. 
-                                                      Since it is quiet time, your message has been deleted. 
-                                                      Here is your message in case you need to resend it at a later time:\n\n{message.content}"""
-                                                    )
+                            await message.author.send(f"""{message.author}, it's been less than 30 minutes since your last message. Since it is quiet time, your message has been deleted. Here is your message in case you need to resend it at a later time:\n\n{message.content}""")
                         except:
                             print(f"No permission to send DM to {message.author}")
                         print(f"Deleted message from {message.author}, since it's been less than 30 minutes since their last message.")
@@ -190,9 +187,7 @@ class Parental(commands.Cog):
             last_time = self.last_message.get(channel.guild.id, {}).get(user.id, None) # Get time of last message
             if last_time is not None and datetime.now() < (last_time + timedelta(minutes=30)): # Check if it's been less than 30 minutes
                 try: 
-                    await user.send(f"""{user}, Don't even think about it. 
-                                    It is currently quiet time.
-                                    It's been less than 30 minutes since your last message"""
+                    await user.send(f"""{user}, Don't even think about it. It is currently quiet time. It's been less than 30 minutes since your last message"""
                                     )
                 except:
                     print(f"No permission to send DM to {user}")
