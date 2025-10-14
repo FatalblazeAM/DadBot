@@ -25,6 +25,7 @@ def main():
         print("ERROR: No authentication token")
         return
     bot = make_bot()
+    
     @tasks.loop(minutes=1)
     async def end_call():
         for guild in bot.guilds:
@@ -35,39 +36,10 @@ def main():
                         await member.move_to(None)
 
     @bot.event
-    async def on_typing(channel, user, when):
-        if isinstance(channel, discord.DMChannel) or user == bot.user:
-            return
-        if is_quiet_time(channel.guild.id, member=user): 
-            await user.send(f"{user}, Don't even think about it")
-
-    @bot.event
     async def on_ready():
         print(f'We have logged in as {bot.user}')
         await load_cogs(bot)
         end_call.start()
-
-    @bot.event
-    async def on_message(message):
-        if message.author == bot.user or not message.guild:
-            return
-        
-        ctx = await bot.get_context(message)
-        if ctx.guild is not None:
-            guild_id: int = ctx.guild.id
-
-            if is_quiet_time(guild_id=guild_id, member=message.author) and not ctx.valid:
-                try:
-                    await message.delete()
-                except discord.Forbidden:
-                    try:
-                        print("No permission to delete messages.")
-                        await ctx.send("No permission to delete messages.")
-                    except discord.Forbidden:
-                        print("No permission to send or delete messages.")
-
-        print(f'Message in {message.guild}, #{message.channel} from {message.author}: {message.content}')
-        await bot.process_commands(message)
 
     @bot.event
     async def on_voice_state_update(member, before, after):
