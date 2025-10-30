@@ -1,6 +1,7 @@
 import re
 import discord
 from discord.ext import commands
+import random
 
 class Jokes(commands.Cog):
     """Dad jokes"""
@@ -36,7 +37,13 @@ class Jokes(commands.Cog):
                 who = who[:60] + "..."
 
             allowed = discord.AllowedMentions.none()
-            await message.channel.send(f"Hi {who}, I'm DadBot.", allowed_mentions=allowed)
+            num_words = len(who.split())
+            if num_words <= 1:
+                await message.channel.send(f"Hi {who}, I'm DadBot.", allowed_mentions=allowed)
+            elif num_words <= 2 and random.random() < 0.5: 
+                await message.channel.send(f"Hi {who}, I'm DadBot.", allowed_mentions=allowed)
+            elif num_words <= 3 and random.random() < 0.33:
+                await message.channel.send(f"Hi {who}, I'm DadBot.", allowed_mentions=allowed)
 
         await self.bot.process_commands(message)
 
