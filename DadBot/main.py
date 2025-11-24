@@ -17,6 +17,7 @@ async def load_cogs(bot: commands.Bot):
     await bot.load_extension("DadBot.cogs.parental")
     await bot.load_extension("DadBot.cogs.override")
     await bot.load_extension("DadBot.cogs.jokes")
+    await bot.load_extension("DadBot.cogs.money")
 
 def main():
     load_dotenv(Path(__file__).resolve().parent.parent / ".env")
